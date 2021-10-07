@@ -2,10 +2,19 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'Yggdroot/indentLine'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'dense-analysis/ale'
 " Plug 'vim-airline/vim-airline'
 " Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
+
+" character for indent guideline
+let g:indentLine_color_term = 61
+let g:indentLine_char = '▏'
+" let g:indentLine_leadingSpaceChar='·'
+" let g:indentLine_leadingSpaceEnabled='1'
 
 " Dracula custom styles which should be overriden before loading the theme
 let g:dracula_bold = 1
@@ -21,8 +30,8 @@ filetype plugin indent on
 syntax on 
 
 " ALE
-set omnifunc=ale#completion#OmniFunc
-let g:ale_completion_autoimport = 1
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '--'
 nnoremap <f12> :ALEGoToDefinition<CR>
 nnoremap <S-f12> :ALEFindReferences<CR>
 
@@ -30,7 +39,7 @@ set re=0 " Use new regular expression engine (https://jameschambers.co.uk/vim-ty
 set encoding=UTF-8
 set backspace=indent,eol,start
 set signcolumn=no
-set scrolloff=6
+set scrolloff=15
 set shiftwidth=4
 set softtabstop=4
 set foldcolumn=2 " width of fold display
@@ -42,16 +51,15 @@ set laststatus=2
 set nowrap
 set tabstop=2
 set autoindent
-set expandtab
 set showmatch
 set expandtab " use white spaces for tabs
 set cursorline " show current line
 set mouse=a
+set history=100
 set undofile " allow undoing when reopening a file
 set undodir=~/.vim/undo
 set backup
 set backupdir=~/.vim/backup
-set history=100
 set showcmd
 set wildmenu
 set cmdheight=1
@@ -59,16 +67,13 @@ set cmdheight=1
 
 " Search
 set hlsearch
-set ignorecase
+" set ignorecase
 set smartcase
 set incsearch
 
 """ Key modifier
 let mapleader = " "
- 
-" Fix typo
-nnoremap q: :q
-
+  
 " Tab navigation
 nnoremap <leader>t :tabnew<CR>
 nnoremap <leader>h :tabprev<CR>
@@ -98,7 +103,7 @@ nnoremap <leader>p :Files<CR>
 hi Normal ctermbg=None
 
 " Cursor Underline
-hi CursorLine cterm=None ctermfg=None ctermbg=None
+hi CursorLine cterm=bold ctermfg=None ctermbg=None
 
 " (Cursor) Line Number
 hi LineNR cterm=None ctermfg=61 ctermbg=None
@@ -109,9 +114,9 @@ hi StatusLine ctermbg=None ctermfg=61
 hi StatusLineNC ctermbg=None ctermfg=61
 
 " Airline tabline
-hi TabLine cterm=bold ctermbg=None
-hi TabLineFill cterm=bold ctermbg=None
-hi TabLineSel ctermbg=61
+hi TabLine cterm=bold ctermfg=61 ctermbg=None
+hi TabLineFill cterm=bold ctermfg=61 ctermbg=None
+hi TabLineSel cterm=bold ctermfg=None ctermbg=None
 
 " Folds
 hi Folded ctermbg=None ctermfg=None
@@ -121,6 +126,43 @@ hi FoldColumn ctermbg=None ctermfg=white
 let g:vim_current_word#highlight_current_word = 1
 hi CurrentWord ctermbg=238
 hi CurrentWordTwins ctermbg=238
+
+" entire size of popup window of fzf
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+
+" Preview window on the upper side of the window with 50% height
+let g:fzf_preview_window = ['up:50%', 'ctrl-/']
+
+" Customize fzf colors to match your color scheme
+" - fzf#wrap translates this to a set of `--color` options
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+" Use <enter> to open new tabs
+let g:fzf_action = { 'enter': 'tab drop' }
+
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<Tab>" :
+    \ coc#refresh()
 
 """"""""""
 " NERDTree
@@ -133,8 +175,8 @@ let NERDTreeMinimalUI=1
 nnoremap <C-b> :NERDTreeToggle<CR>
 
 " Change arrow characters
-let g:NERDTreeDirArrowExpandable = '├'
-let g:NERDTreeDirArrowCollapsible = '└' 
+let g:NERDTreeDirArrowExpandable = ''
+let g:NERDTreeDirArrowCollapsible = '' 
 " let g:NERDTreeMapActivateNode = '<tab>'
 let NERDTreeMapOpenInTab='<tab>'
 
@@ -166,6 +208,79 @@ let g:airline#extensions#tabline#tabs_label = '' " Remove defalt 'tabs'
 " let g:WebDevIconsNerdTreeBeforeGlyphPadding = ''
 
 " autocmd VimEnter * ++nested NERDTree | wincmd p " https://github.com/itchyny/lightline.vim/issues/591
+
+" Custom Tab Line
+set tabline=%!MyTabLine()
+function MyTabLine()
+        let s = '' " complete tabline goes here
+        " loop through each tab page
+        for t in range(tabpagenr('$'))
+                " set highlight
+                if t + 1 == tabpagenr()
+                        let s .= '%#TabLineSel#'
+                else
+                        let s .= '%#TabLine#'
+                endif
+                " set the tab page number (for mouse clicks)
+                let s .= '%' . (t + 1) . 'T'
+                let s .= ' '
+                " set page number string
+                let s .= t + 1 . ' '
+                " get buffer names and statuses
+                let n = ''      "temp string for buffer names while we loop and check buftype
+                let m = 0       " &modified counter
+                let bc = len(tabpagebuflist(t + 1))     "counter to avoid last ' '
+                " loop through each buffer in a tab
+                for b in tabpagebuflist(t + 1)
+                        " buffer types: quickfix gets a [Q], help gets [H]{base fname}
+                        " others get 1dir/2dir/3dir/fname shortened to 1/2/3/fname
+                        if getbufvar( b, "&buftype" ) == 'help'
+                                let n .= '[H]' . fnamemodify( bufname(b), ':t:s/.txt$//' )
+                        elseif getbufvar( b, "&buftype" ) == 'quickfix'
+                                let n .= '[Q]'
+                        elseif bufname(b) != 'NERD_tree_1'
+                                let n .= pathshorten(bufname(b))
+                        endif
+                        " check and ++ tab's &modified count
+                        if getbufvar( b, "&modified" )
+                                let m += 1
+                        endif
+                        " no final ' ' added...formatting looks better done later
+                        if bc > 1
+                                let n .= ' '
+                        endif
+                        let bc -= 1
+                endfor
+                " add modified label [n+] where n pages in tab are modified
+                if m > 0
+                    " let s .= '[' . m . '+]'
+                    let s .= '[*]'
+                endif
+                " select the highlighting for the buffer names
+                " my default highlighting only underlines the active tab
+                " buffer names.
+                if t + 1 == tabpagenr()
+                        let s .= '%#TabLineSel#'
+                else
+                        let s .= '%#TabLine#'
+                endif
+                " add buffer names
+                if n == ''
+                        let s .= '[New]'
+                else
+                        let s .= n
+                endif
+                " switch to no underlining and add final space to buffer list
+                let s .= ' '
+        endfor
+        " after the last tab fill with TabLineFill and reset tab page nr
+        let s .= '%#TabLineFill#%T'
+        " right-align the label to close the current tab page
+        if tabpagenr('$') > 1
+                let s .= '%=%#TabLineFill#%999X' "close'
+        endif
+        return s
+endfunction
 
 " Update icons upon source .vimrc
 if exists("g:loaded_webdevicons")
