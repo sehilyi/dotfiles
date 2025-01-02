@@ -1,0 +1,30 @@
+# https://ghostty.org/docs/config
+
+window-padding-x = 40
+window-padding-y = 40
+window-decoration = true
+macos-titlebar-style = hidden
+
+font-family = SF Mono Bold
+font-family-bold = SF Mono Bold
+font-style = Bold
+font-size = 20
+adjust-cell-height = 20%
+
+background-opacity = 1
+background = #282828
+foreground = #EBDBB2
+selection-background = #F81CE5
+
+cursor-style = block
+adjust-cursor-thickness = 3
+shell-integration-features = no-cursor
+
+# https://www.ditig.com/publications/256-colors-cheat-sheet
+palette = 0=#2A2A30
+palette = 1=#CC241D
+palette = 2=#98971A
+palette = 5=#B16286
+palette = 6=#689D6A
+palette = 15=#EBDBB2
+minimum-contrast = 1.1
