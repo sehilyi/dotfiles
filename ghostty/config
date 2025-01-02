@@ -4,6 +4,8 @@ window-padding-x = 40
 window-padding-y = 40
 window-decoration = true
 macos-titlebar-style = hidden
+confirm-close-surface = false
+resize-overlay-position = bottom-right
 
 font-family = SF Mono Bold
 font-family-bold = SF Mono Bold
